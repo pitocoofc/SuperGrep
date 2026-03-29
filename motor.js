@@ -1,5 +1,7 @@
 const fs = require('fs');
 const htmlparser2 = require('htmlparser2');
+
+// Importando os sistemas de suporte
 const deobfuscator = require('./deobfuscator');
 const urlShielder = require('./url_shielder');
 
@@ -12,7 +14,7 @@ console.log("-------------------------------------------");
 
 let issuesFound = 0;
 
-// 2. Configurar o Parser com Suporte a Async
+// 2. Configurar o Parser
 const parser = new htmlparser2.Parser({
     onopentag(name, attribs) {
         // --- Verificação de Atributos Perigosos ---
@@ -23,7 +25,7 @@ const parser = new htmlparser2.Parser({
             }
         });
 
-        // --- Verificação de URLs ---
+        // --- Verificação de URLs (Nova Função) ---
         const link = attribs.href || attribs.src;
         if (link && link.startsWith('http')) {
             const status = urlShielder.check(link);
@@ -32,10 +34,7 @@ const parser = new htmlparser2.Parser({
         }
     },
 
-    async ontext(text) {
-        // Ignorar espaços vazios
-        if (!text.trim()) return;
-
+    ontext(text) {
         // --- Verificação de Funções JS ---
         rules.js_functions.forEach(func => {
             if (text.includes(func)) {
@@ -44,36 +43,24 @@ const parser = new htmlparser2.Parser({
             }
         });
 
-        // --- Verificação de Ofuscação (Async) ---
+        // --- Verificação de Ofuscação (Nova Função) ---
         const suspicious = rules.obfuscation_patterns.some(p => new RegExp(p).test(text));
         if (suspicious) {
             console.warn("⚠️ CÓDIGO OFUSCADO DETECTADO! Tentando revelar...");
-            try {
-                // O await aqui garante que o código venha limpo, não como Promise
-                const clean = await deobfuscator.clean(text);
-                console.log("✨ CONTEÚDO REVELADO:\n----------------------------\n" + clean + "\n----------------------------");
-            } catch (err) {
-                console.error("[!] Erro ao processar ofuscação.");
-            }
+            const clean = deobfuscator.clean(text);
+            console.log("✨ CONTEÚDO REVELADO:\n" + clean);
             issuesFound++;
         }
     }
 }, { decodeEntities: true });
 
-// 3. Função de Execução para lidar com o fluxo Async
-async function run() {
-    parser.write(codeToTest);
-    parser.end();
+// 3. Executar
+parser.write(codeToTest);
+parser.end();
 
-    // Pequeno delay para garantir que todos os ontext async terminaram
-    setTimeout(() => {
-        console.log("-------------------------------------------");
-        if (issuesFound === 0) {
-            console.log("✅ Verificação concluída: Nenhum problema encontrado.");
-        } else {
-            console.log(`⚠️ Verificação concluída: ${issuesFound} sinalizações encontradas.`);
-        }
-    }, 500);
+console.log("-------------------------------------------");
+if (issuesFound === 0) {
+    console.log("✅ Verificação concluída: Nenhum problema encontrado.");
+} else {
+    console.log(`⚠️ Verificação concluída: ${issuesFound} sinalizações encontradas.`);
 }
-
-run();
