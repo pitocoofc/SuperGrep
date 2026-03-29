@@ -1,4 +1,4 @@
-# 🛡️ SuperGrep v1.0.0 - SkillForge
+q# 🛡️ SuperGrep v1.0.0 - SkillForge
 
 O **SuperGrep** é um motor de análise estática e deofuscação em tempo real desenvolvido para identificar vetores de ataque em arquivos HTML e JavaScript, com foco especial em ambientes mobile (Termux/Android).
 
@@ -39,3 +39,10 @@ Diferente de scanners comuns, o SuperGrep utiliza um sistema de **Polimorfismo R
 
 
 5. rode o "motor.js"
+
+
+"Como implementar sem precisar baixar no meu dispositivo?"
+
+Copie o repositório em zip ou nativamente e implemente ele diretamente no seu projeto git...Depois apenas altere seu sistema de verificação/donwload para enviar o html e javascript do alvo para o input.html
+
+recomendação: Não separe eles da mesma pasta e evite excluir funções de segurança na tentativa de otimização 
