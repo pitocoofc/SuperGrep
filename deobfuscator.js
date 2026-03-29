@@ -1,12 +1,18 @@
+const REstringer = require('restringer');
+
 module.exports = {
     clean(code) {
-        // Simulação: Tenta converter Hex (\x41) para texto (A)
         try {
-            return code.replace(/\\x([0-9a-fA-F]{2})/g, (match, hex) => {
-                return String.fromCharCode(parseInt(hex, 16));
-            });
+            // O REstringer processa o código e tenta resolver as ofuscações
+            const restringer = new REstringer(code);
+            
+            // Ele aplica várias técnicas de desobstrução automaticamente
+            restringer.deobfuscate();
+            
+            return restringer.script; // Retorna o código "limpo"
         } catch (e) {
-            return "[Erro na desofuscação]";
+            // Se falhar (código malformado), retorna o original com aviso
+            return `[Falha na Desofuscação Automática]: ${e.message}\nOriginal: ${code}`;
         }
     }
 };
