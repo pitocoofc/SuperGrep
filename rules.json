@@ -1,0 +1,17 @@
+{
+  "html_attributes": [
+    "onclick", 
+    "onerror", 
+    "onload", 
+    "onmouseover",
+    "onfocus"
+  ],
+  "js_functions": [
+    "eval(", 
+    "setTimeout(", 
+    "setInterval(", 
+    "innerHTML",
+    "document.write(",
+    "location.href"
+  ]
+}
